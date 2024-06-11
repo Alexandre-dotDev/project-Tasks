@@ -1,12 +1,12 @@
 const express = require("express");
-const TaskModel = require("../model/task.model");
 
 const TaskController = require("../controllers/task.controller");
+
 const router = express.Router();
 router.use(express.json());
 
 router.get("/", async (req, res) => {
-  return new TaskController(req, res).getTasks();
+  return new TaskController(req, res).getAllTasks();
 });
 
 router.get("/:id", async (req, res) => {
@@ -14,11 +14,11 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  return new TaskController(req, res).postTask();
+  return new TaskController(req, res).createTask();
 });
 
 router.patch("/:id", async (req, res) => {
-  return new TaskController(req, res).patchTask();
+  return new TaskController(req, res).updateTask();
 });
 
 router.delete("/:id", async (req, res) => {
