@@ -44,6 +44,30 @@ app.post("/tasks", async (req, res) => {
   }
 });
 
+app.patch("/tasks/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const taskData = req.body;
+
+    const taskToUpdate = await TaskModel.findById(taskId);
+    const allowerUpdate = ["isCompleted"];
+    const requestedsUpdates = Object.keys(req.body);
+
+    for (update of requestedsUpdates) {
+      if (allowerUpdate.includes(update)) {
+        taskToUpdate[update] = taskData[update];
+      } else {
+        return res.status(500).send(`O campo ${update} não é editavel.`);
+      }
+    }
+
+    await taskToUpdate.save();
+    res.status(200).send(taskToUpdate);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
 app.delete("/tasks/:id", async (req, res) => {
   try {
     const taskId = req.params.id;
