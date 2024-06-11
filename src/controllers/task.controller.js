@@ -1,5 +1,5 @@
 const TaskModel = require("../model/task.model");
-
+const { notFoundErros } = require("../errors/mongo.errors");
 class TaskController {
   constructor(req, res) {
     this.req = req;
@@ -9,6 +9,10 @@ class TaskController {
   async getTasks() {
     try {
       const tasks = await TaskModel.find({});
+
+      if (!tasks) {
+        return notFoundErros(this.res);
+      }
 
       this.res.status(200).send(tasks);
     } catch (error) {
@@ -21,8 +25,9 @@ class TaskController {
       const taskId = this.req.params.id;
       const task = await TaskModel.findById(taskId);
       if (!task) {
-        return this.res.status(404).send("Task não localizada.");
+        return notFoundErros(this.res);
       }
+
       this.res.status(200).send(task);
     } catch (error) {
       this.res.status(404).send(error.message);
@@ -54,7 +59,7 @@ class TaskController {
         if (allowerUpdate.includes(update)) {
           taskToUpdate[update] = taskData[update];
         } else {
-          return this.res.status(500).send(`O campo ${update} não é editavel.`);
+          return notFoundErros(this.res);
         }
       }
 
@@ -71,7 +76,9 @@ class TaskController {
 
       const taskToDelete = await TaskModel.findById(taskId);
 
-      if (!taskToDelete) return this.res.status(404).send("Id não localizado.");
+      if (!taskToDelete) {
+        return notFoundErros(this.res);
+      }
 
       const deletedTask = await TaskModel.findByIdAndDelete(taskId);
 
